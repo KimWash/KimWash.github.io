@@ -1,33 +1,18 @@
 <template>
   <div>
-    <div class="tiles">
-      <div
-        class="tile is-ancestor is-10"
-        style="margin: 0 auto; width: 100%"
-        v-for="i in Math.ceil(data.length / 3)"
-        :key="i"
-      >
-        <div class="tile is-parent" v-for="j in 3" :key="j">
-          <post-card
-            @onClick="$router.push(data[j + 3 * (i - 1) - 1].path)"
-            v-if="j + 3 * (i - 1) - 1 < data.length"
-            :title="data[j + 3 * (i - 1) - 1].frontmatter.title"
-            :category="data[j + 3 * (i - 1) - 1].frontmatter.category"
-            :date="data[j + 3 * (i - 1) - 1].frontmatter.date"
-          >
-          </post-card>
-        </div>
+    <div class="post-box">
+      <div class="post-card" v-for="i in data.length" :key="i">
+        <post-card @onClick="$router.push(data[i].path)" v-if="i < data.length" :title="data[i].frontmatter.title"
+          :category="data[i].frontmatter.category" :date="data[i].frontmatter.date">
+        </post-card>
+        <ClientOnly>
+          <component v-if="infinityLoadingComponent && hasMore" :is="infinityLoadingComponent" :identifier="infiniteId"
+            @infinite="onScroll"></component>
+        </ClientOnly>
       </div>
-      <ClientOnly>
-        <component
-          v-if="infinityLoadingComponent && hasMore"
-          :is="infinityLoadingComponent"
-          :identifier="infiniteId"
-          @infinite="onScroll"
-        ></component>
-      </ClientOnly>
     </div>
-    <div class="nopost" v-if="Math.ceil(posts.length / 3) == 0">
+
+    <div class="nopost" v-if="data.length <= 0">
       아무런 글도 없는 것 같네요.
     </div>
   </div>
@@ -39,7 +24,7 @@ export default {
   props: {
     posts: {
       type: Object,
-      default: () => {},
+      default: () => { },
     },
   },
   data() {
@@ -84,17 +69,43 @@ export default {
 </script>
 
 <style>
-@media screen and (min-width: 1024px) {
+/* @media screen and (min-width: 1024px) {
   .tiles {
     margin: 2vw 0;
     padding: 0 10vw;
   }
+} */
+.post-box {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height: 200px;
+  /* height given for illustration */
+  display: flex;
+  flex-flow: row wrap;
+  position: relative;
 }
+
+@media screen and (max-width: 767px) {
+  .post-card {
+    flex: 0 1 calc(50%);
+  }
+}
+@media screen and (min-width: 768px) {
+  .post-card {
+  flex: 0 1 calc(25%); /* <-- adjusting for margin */
+}
+}
+.post-card {
+  cursor:pointer
+}
+
+
+
 .nopost {
   display: flex;
   justify-content: center;
   margin-top: 10vh;
   font-size: 2rem;
   font-weight: bold;
-}
-</style>
+}</style>

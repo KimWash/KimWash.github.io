@@ -1,9 +1,10 @@
 <template>
   <article
     @click="onClick"
-    class="tile is-child box"
-    v-bind:style="`background: linear-gradient(45deg, ${bgColors[0]} 0%, ${bgColors[1]} 100%)`"
+    class="article-card"
+    v-bind:style="` background: linear-gradient(45deg, ${bgColors[0]} 0%, ${bgColors[1]} 100%)`"
   >
+  <div class="titles">
     <p class="title">
       {{ title }}
     </p>
@@ -11,6 +12,8 @@
       {{ category }} |
       {{ date }}
     </p>
+  </div>
+ 
     <p class="content"><br /></p>
   </article>
 </template>
@@ -63,13 +66,41 @@ export default {
 
 <style>
 .is-child {
-  border-radius: 18px;
+  border-radius: 0;
   color: white;
 }
 </style>
 <style scoped>
+
 .title,
 .subtitle {
-  color: white;
+ color: white
+}
+.titles {
+  display: flex;
+  flex-direction: column;
+  justify-content:space-between;
+  gap:2px;
+}
+.article-card {
+  aspect-ratio : 1 / 1;
+   height: 100%;
+  padding: 1.5rem
+}
+.title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding-bottom: 0.25rem;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+}
+
+.subtitle {
+  padding-top: 0.5rem;
+  font-size: 1rem;
+}
+
+.content {
+  visibility: hidden;
 }
 </style>
