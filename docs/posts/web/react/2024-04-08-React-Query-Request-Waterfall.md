@@ -95,3 +95,55 @@ function App () {
 
 이러한 요청 폭포를 제거하는 방법으로 부모 컴포넌트로 자식 컴포넌트의 쿼리를 호이스팅하는 것이 있다. 이렇게 하면 두 개의 쿼리가 병렬로 수행돼 요청 폭포를 평탄화시킬 수 있다.
 
+### Code Splitting
+
+JS의 패러다임은 모든 코드를 작은 모듈로 나누고, 부분부분만 로드하는 것이다. 특히, 리액트에서는 lazy loading을 이용해 렌더되기 전까지 컴포넌트 모듈을 로드하지 않아 최초 로딩을 크게 줄일 수 있다. 하지만 이런 방법론은 조건부 렌더링에서 요청 폭포를 만들어낸다는 단점이 있다.
+
+아래 예시 코드를 보자. feed를 먼저 가져오고, 각 피드 아이템의 타입 별로 다른 컴포넌트를 렌더하고, 일반아이템 컴포넌트가 아닌 피드아이템 컴포넌트는 그래프 데이터를 가져온다. 이런 경우 getFeed() → GraphFeedItem 모듈 → getGraphDataById() 순으로 로드가 이루어지고, 이는 전형적인 요청 폭포다. HTML 렌더를 위한 마크업과 리액트 번들 다운로드까지 생각하면 더 크다.
+
+```jsx
+// This lazy loads the GraphFeedItem component, meaning
+// it wont start loading until something renders it
+const GraphFeedItem = React.lazy(() => import('./GraphFeedItem'))
+
+function Feed() {
+  const { data, isPending } = useQuery({
+    queryKey: ['feed'],
+    queryFn: getFeed,
+  })
+
+  if (isPending) {
+    return 'Loading feed...'
+  }
+
+  return (
+    <>
+      {data.map((feedItem) => {
+        if (feedItem.type === 'GRAPH') {
+          return <GraphFeedItem key={feedItem.id} feedItem={feedItem} />
+        }
+        
+        return <StandardFeedItem key={feedItem.id} feedItem={feedItem} />
+      })}
+    </>
+  )
+}
+
+// GraphFeedItem.tsx
+function GraphFeedItem({ feedItem }) {
+  const { data, isPending } = useQuery({
+    queryKey: ['graph', feedItem.id],
+    queryFn: getGraphDataById,
+  })
+
+  ...
+}
+```
+
+이 예제에서 요청 폭포를 없앨 수 있는 방법이 있다.
+
+Nested Component Waterfalls를 없애는 방법과 마찬가지로 부모 컴포넌트에서 자식 컴포넌트에서 호출할 쿼리를 호이스팅하는 것이다. 하지만 이 경우 부모 컴포넌트가 가지지 않아도 될 쿼리 코드를 갖게 되고, 성능에 영향을 줄 수 있다. 물론 얼마나 클지는 모르겠다..
+
+이 결국 문제는 양자택일이다. 사용빈도가 적을 fetching 코드를 부모 모듈에 넣을지, 요청 폭포를 감수하고 조건부로 렌더될 자식 컴포넌트에 fetching 코드를 넣을지 상황에 따라 선택하면 된다.
+
+근데 사실 둘다 마음에 안든다. 그래서 서버 컴포넌트를 이용해 이 문제를 해결한다고 한다.
