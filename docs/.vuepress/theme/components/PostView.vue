@@ -1,13 +1,21 @@
 <template>
   <div>
     <div class="post-box">
-      <div class="post-card" v-for="i in data.length" :key="i">
-        <post-card @onClick="$router.push(data[i].path)" v-if="i < data.length" :title="data[i].frontmatter.title"
-          :category="data[i].frontmatter.category" :date="data[i].frontmatter.date">
+      <div class="post-card" v-for="singleData in data" :key="singleData">
+        <post-card
+          @onClick="$router.push(singleData.path)"
+          :title="singleData.frontmatter.title"
+          :category="singleData.frontmatter.category"
+          :date="singleData.frontmatter.date"
+        >
         </post-card>
         <ClientOnly>
-          <component v-if="infinityLoadingComponent && hasMore" :is="infinityLoadingComponent" :identifier="infiniteId"
-            @infinite="onScroll"></component>
+          <component
+            v-if="infinityLoadingComponent && hasMore"
+            :is="infinityLoadingComponent"
+            :identifier="infiniteId"
+            @infinite="onScroll"
+          ></component>
         </ClientOnly>
       </div>
     </div>
@@ -24,7 +32,7 @@ export default {
   props: {
     posts: {
       type: Object,
-      default: () => { },
+      default: () => {},
     },
   },
   data() {
@@ -93,14 +101,12 @@ export default {
 }
 @media screen and (min-width: 768px) {
   .post-card {
-  flex: 0 1 calc(25%); /* <-- adjusting for margin */
-}
+    flex: 0 1 calc(25%); /* <-- adjusting for margin */
+  }
 }
 .post-card {
-  cursor:pointer
+  cursor: pointer;
 }
-
-
 
 .nopost {
   display: flex;
@@ -108,4 +114,5 @@ export default {
   margin-top: 10vh;
   font-size: 2rem;
   font-weight: bold;
-}</style>
+}
+</style>

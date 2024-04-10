@@ -4,16 +4,16 @@
     class="article-card"
     v-bind:style="` background: linear-gradient(45deg, ${bgColors[0]} 0%, ${bgColors[1]} 100%)`"
   >
-  <div class="titles">
-    <p class="title">
-      {{ title }}
-    </p>
-    <p class="subtitle">
-      {{ category }} |
-      {{ date }}
-    </p>
-  </div>
- 
+    <div class="titles">
+      <p class="title">
+        {{ title }}
+      </p>
+      <p class="subtitle">
+        {{ category }} |
+        {{ date }}
+      </p>
+    </div>
+
     <p class="content"><br /></p>
   </article>
 </template>
@@ -53,9 +53,6 @@ export default {
       ],
     };
   },
-  created() {
-    console.log(this.bgColors);
-  },
   methods: {
     onClick() {
       this.$emit("onClick");
@@ -71,21 +68,20 @@ export default {
 }
 </style>
 <style scoped>
-
 .title,
 .subtitle {
- color: white
+  color: white;
 }
 .titles {
   display: flex;
   flex-direction: column;
-  justify-content:space-between;
-  gap:2px;
+  justify-content: space-between;
+  gap: 2px;
 }
 .article-card {
-  aspect-ratio : 1 / 1;
-   height: 100%;
-  padding: 1.5rem
+  aspect-ratio: 1 / 1;
+  height: 100%;
+  padding: 1.5rem;
 }
 .title {
   font-size: 1.2rem;
