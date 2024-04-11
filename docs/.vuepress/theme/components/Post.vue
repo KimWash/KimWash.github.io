@@ -4,10 +4,9 @@
       <div class="column">
         <p class="title is-4">{{ $page.frontmatter.title }}</p>
       </div>
-      <div class="column is-2">
-        <p class="subtitle is-5 date">{{ $page.frontmatter.date }}</p>
-      </div>
     </div>
+    <p class="subtitle is-5 date">{{ $page.frontmatter.date }}</p>
+
     <Content style="paddig: 0" />
     <Disqus class="comment" />
   </div>
